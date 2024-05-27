@@ -16,7 +16,7 @@ tetr-zen is a node.js program to log and summarise your ZEN progression on TETR.
 
 ## Current Features:
 
-- **Simple usage:** Just run 2 commands on the console to review your stats.
+- **Simple usage:** You only have to run 2 commands on the console to review your stats.
 - **Variety of statistics:** Get to see your total logs, current level and score, and how much score you earn in a period of time on average.
 
 ## Installation
@@ -25,6 +25,7 @@ tetr-zen is a node.js program to log and summarise your ZEN progression on TETR.
 2) Install [node.js](https://nodejs.org/en).
 3) In the console, `dir` (or `cd`) into the extracted `tetr-zen` directory.
 4) Run `npm install`
+5) Open `fetchZen.mjs` and change the `username` constant at the bottom of the file to your TETR.IO username.
 
 ## Usage
 
