@@ -14,6 +14,9 @@
 
 tetr-zen is a node.js program to log and summarise your ZEN progression on TETR.IO.
 
+> [!NOTE]
+> This is a work in progress. Please report issues and feel free to request new features.
+
 ## Current Features:
 
 - **Simple usage:** You only have to run 2 commands on the console to review your stats.
