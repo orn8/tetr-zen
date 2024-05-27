@@ -1,8 +1,15 @@
-import { readFile } from 'fs/promises';
+import { readFile, writeFile, access } from 'fs/promises';
 import chalk from 'chalk';
 
 async function calculateZenProgress() {
     try {
+        try {
+            await access('personal_records.json');
+        } catch (error) {
+            await writeFile('personal_records.json', JSON.stringify({ highestAverageScorePerDay: 0 }, null, 2));
+            console.error('personal_records.json does not exist, initialising personal bests.');
+        }
+
         const data = await readFile('zen_progression.json', 'utf-8');
         const progression = JSON.parse(data);
 
@@ -37,6 +44,14 @@ async function calculateZenProgress() {
 
         const averageScorePerDay = totalScoreImprovement / totalTimeTaken;
 
+        const personalRecordsData = await readFile('personal_records.json', 'utf-8');
+        const personalRecords = JSON.parse(personalRecordsData);
+
+        if (averageScorePerDay > personalRecords.highestAverageScorePerDay) {
+            personalRecords.highestAverageScorePerDay = averageScorePerDay;
+            await writeFile('personal_records.json', JSON.stringify(personalRecords, null, 2));
+        }
+
         console.log(chalk.magenta('Zen Progress Summary:'));
         console.log(chalk.magenta(`- Total Entries: ${progression.length}`));
 
@@ -44,9 +59,10 @@ async function calculateZenProgress() {
         console.log(chalk.green(`\nCurrent Level: ${latestEntry.level.toLocaleString()}`));
         console.log(chalk.green(`Current Score: ${latestEntry.score.toLocaleString()}`));
 
-        console.log(chalk.yellow('\nAverage Score Earned:'));
+        console.log(chalk.yellowBright('\nAverage Score Earned:'));
 
-        console.log(chalk.yellow(`- Per Day: ${Math.round(averageScorePerDay).toLocaleString()}`));
+        console.log(chalk.yellowBright(`- Per Day: ${Math.round(averageScorePerDay).toLocaleString()}`));
+        console.log(chalk.yellow(`   Highest Per Day: ${personalRecords.highestAverageScorePerDay.toLocaleString()}`));
 
     } catch (error) {
         console.error('Error calculating Zen progress:', error.message);
