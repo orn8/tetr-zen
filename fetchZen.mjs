@@ -1,5 +1,6 @@
 import fetch from 'node-fetch';
 import { readFile, writeFile } from 'fs/promises';
+import chalk from 'chalk';
 
 async function fetchAndSaveZenRecord(username) {
     try {
@@ -50,7 +51,7 @@ async function fetchAndSaveZenRecord(username) {
 
         await writeFile('zen_progression.json', JSON.stringify(existingProgression, null, 2));
 
-        console.log('Progression data saved successfully.');
+        console.log(chalk.green('Progression data saved successfully.'));
     } catch (error) {
         console.error('Error fetching and saving ZEN record:', error.message);
     }
