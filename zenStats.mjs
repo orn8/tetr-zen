@@ -29,7 +29,7 @@ async function readProgressionData() {
         const data = await readFile('zen_progression.json', 'utf-8');
         return JSON.parse(data);
     } catch (error) {
-        console.error('zen_progression.json does not exist or is inaccessible.');
+        console.error('zen_progression.json does not exist, please run "npm run fetchZen".');
         throw error;
     }
 }
@@ -45,8 +45,16 @@ function calculateTimeDifferences(progression) {
         const timeDifferenceDays = timeDifferenceMs / (1000 * 60 * 60 * 24);
         const scoreDifference = currEntry.score - prevEntry.score;
 
+        if (!isFinite(timeDifferenceDays) || timeDifferenceDays <= 0) {
+            console.error('Invalid time difference. Skipping entry:');
+            console.log(JSON.stringify(prevEntry, null, 2));
+            console.log(JSON.stringify(currEntry, null, 2));
+            console.log();
+            return null;
+        }
+
         return { timeDifferenceDays, scoreDifference, currEntry, prevEntry };
-    });
+    }).filter(entry => entry !== null);
 }
 
 function calculateScores(timeDifferences) {
@@ -56,17 +64,13 @@ function calculateScores(timeDifferences) {
     let scoreInLastMonth = 0;
 
     timeDifferences.forEach(({ timeDifferenceDays, scoreDifference }) => {
-        if (timeDifferenceDays > 0) {
-            totalScoreImprovement += scoreDifference / timeDifferenceDays;
-            totalTimeTaken += timeDifferenceDays;
-            if (timeDifferenceDays <= 1) {
-                scoreInLastDay = scoreDifference;
-            }
-            if (timeDifferenceDays <= 30) {
-                scoreInLastMonth = scoreDifference;
-            }
-        } else {
-            console.error('Invalid time difference. Skipping entry.');
+        totalScoreImprovement += scoreDifference / timeDifferenceDays;
+        totalTimeTaken += timeDifferenceDays;
+        if (timeDifferenceDays <= 1) {
+            scoreInLastDay = scoreDifference;
+        }
+        if (timeDifferenceDays <= 30) {
+            scoreInLastMonth = scoreDifference;
         }
     });
 
