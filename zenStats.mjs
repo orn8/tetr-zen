@@ -16,7 +16,7 @@ async function calculateZenProgress() {
         const numIntervals = progression.length - 1;
 
         if (numIntervals < 1) {
-            console.error('Not enough data to calculate averages.');
+            console.error('Not enough data to calculate statistics.');
             return;
         }
 
@@ -53,7 +53,7 @@ async function calculateZenProgress() {
         }
 
         console.log(chalk.magenta('Zen Progress Summary:'));
-        console.log(chalk.magenta(`- Total Entries: ${progression.length}`));
+        console.log(chalk.magenta(`- Total Logs: ${progression.length}`));
 
         const latestEntry = progression[progression.length - 1];
         console.log(chalk.green(`\nCurrent Level: ${latestEntry.level.toLocaleString()}`));

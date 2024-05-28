@@ -34,7 +34,7 @@ async function fetchAndSaveZenRecord(username) {
             const existingData = await readFile('zen_progression.json', 'utf-8');
             existingProgression = JSON.parse(existingData);
         } catch (error) {
-            console.error('zen_progression.json does not exist, initializing progression data.');
+            console.error('zen_progression.json does not exist, initialising progression data.');
         }
 
         if (existingProgression.length > 0) {
