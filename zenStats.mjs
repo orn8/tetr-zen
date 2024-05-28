@@ -18,7 +18,7 @@ async function ensurePersonalRecords() {
         return updatedRecords;
     } catch (error) {
         await writeFile('personal_records.json', JSON.stringify(initialRecords, null, 2));
-        console.error('personal_records.json did not exist or was missing keys, initialising personal bests.');
+        console.error('personal_records.json does not exist, initialising personal bests.');
         return initialRecords;
     }
 }
