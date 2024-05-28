@@ -20,7 +20,7 @@ tetr-zen is a node.js program to log and summarise your ZEN progression on TETR.
 ## Current Features:
 
 - **Simple usage:** Just 2 commands away from your stats.
-- **Variety of statistics:** View your total logs, current level and score, and how much score you earn in a period of time on average.
+- **Variety of statistics:** View your total logs, current level and score, how much has been earned in the past day, and more!
 - **Personal bests:** Review your best and quickest improvements with ease.
 
 > [!IMPORTANT]

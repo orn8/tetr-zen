@@ -4,10 +4,30 @@ import chalk from 'chalk';
 async function calculateZenProgress() {
     try {
         try {
-            await access('personal_records.json');
+            await access('zen_progression.json');
         } catch (error) {
-            await writeFile('personal_records.json', JSON.stringify({ highestAverageScorePerDay: 0 }, null, 2));
-            console.error('personal_records.json does not exist, initialising personal bests.');
+            console.error('zen_progression.json does not exist. Please run "npm run fetchZen".');
+            return;
+        }
+
+        let personalRecords;
+        try {
+            await access('personal_records.json');
+            const personalRecordsData = await readFile('personal_records.json', 'utf-8');
+            personalRecords = JSON.parse(personalRecordsData);
+
+            if (!('highestAverageScorePerDay' in personalRecords)) {
+                personalRecords.highestAverageScorePerDay = 0;
+            }
+            if (!('highestScoreInOneDay' in personalRecords)) {
+                personalRecords.highestScoreInOneDay = 0;
+            }
+
+            await writeFile('personal_records.json', JSON.stringify(personalRecords, null, 2));
+        } catch (error) {
+            personalRecords = { highestAverageScorePerDay: 0, highestScoreInOneDay: 0 };
+            await writeFile('personal_records.json', JSON.stringify(personalRecords, null, 2));
+            console.error('personal_records.json did not exist or was missing keys, initialising personal bests.');
         }
 
         const data = await readFile('zen_progression.json', 'utf-8');
@@ -22,6 +42,7 @@ async function calculateZenProgress() {
 
         let totalScoreImprovement = 0;
         let totalTimeTaken = 0;
+        let scoreInLastDay = 0;
 
         for (let i = 1; i < progression.length; i++) {
             const prevEntry = progression[i - 1];
@@ -38,19 +59,32 @@ async function calculateZenProgress() {
                 continue;
             }
 
-            totalScoreImprovement += (currEntry.score - prevEntry.score) / timeDifferenceDays;
+            const scoreDifference = currEntry.score - prevEntry.score;
+
+            totalScoreImprovement += scoreDifference / timeDifferenceDays;
             totalTimeTaken += timeDifferenceDays;
+
+            if (timeDifferenceDays <= 1) {
+                scoreInLastDay = scoreDifference;
+            }
         }
 
         const averageScorePerDay = totalScoreImprovement / totalTimeTaken;
 
-        const personalRecordsData = await readFile('personal_records.json', 'utf-8');
-        const personalRecords = JSON.parse(personalRecordsData);
+        let highestAverageScorePerDay = personalRecords.highestAverageScorePerDay;
+        let highestScoreInOneDay = personalRecords.highestScoreInOneDay;
 
-        if (averageScorePerDay > personalRecords.highestAverageScorePerDay) {
-            personalRecords.highestAverageScorePerDay = averageScorePerDay;
-            await writeFile('personal_records.json', JSON.stringify(personalRecords, null, 2));
+        if (averageScorePerDay > highestAverageScorePerDay) {
+            highestAverageScorePerDay = averageScorePerDay;
+            personalRecords.highestAverageScorePerDay = highestAverageScorePerDay;
         }
+
+        if (scoreInLastDay > highestScoreInOneDay) {
+            highestScoreInOneDay = scoreInLastDay;
+            personalRecords.highestScoreInOneDay = highestScoreInOneDay;
+        }
+
+        await writeFile('personal_records.json', JSON.stringify(personalRecords, null, 2));
 
         console.log(chalk.magenta('Zen Progress Summary:'));
         console.log(chalk.magenta(`- Total Logs: ${progression.length}`));
@@ -60,9 +94,12 @@ async function calculateZenProgress() {
         console.log(chalk.green(`Current Score: ${latestEntry.score.toLocaleString()}`));
 
         console.log(chalk.yellowBright('\nAverage Score Earned:'));
-
         console.log(chalk.yellowBright(`- Per Day: ${Math.round(averageScorePerDay).toLocaleString()}`));
-        console.log(chalk.yellow(`   Highest Per Day: ${personalRecords.highestAverageScorePerDay.toLocaleString()}`));
+        console.log(chalk.yellow(`    Highest Per Day: ${Math.round(highestAverageScorePerDay).toLocaleString()}`));
+
+        console.log(chalk.cyanBright('\nScore Earned:'));
+        console.log(chalk.cyanBright(`- In the Last Day: ${scoreInLastDay.toLocaleString()}`));
+        console.log(chalk.cyan(`    Highest In One Day: ${highestScoreInOneDay.toLocaleString()}`));
 
     } catch (error) {
         console.error('Error calculating Zen progress:', error.message);
