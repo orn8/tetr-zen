@@ -29,8 +29,7 @@ async function readProgressionData() {
         const data = await readFile('zen_progression.json', 'utf-8');
         return JSON.parse(data);
     } catch (error) {
-        console.error('zen_progression.json does not exist, please run "npm run fetchZen".');
-        throw error;
+        throw new Error('zen_progression.json does not exist, please run "npm run fetchZen".');
     }
 }
 
@@ -108,7 +107,7 @@ async function calculateZenProgress() {
 
         const latestEntry = progression[progression.length - 1];
 
-        console.log(chalk.magenta('Zen Progress Summary:'));
+        console.log(chalk.magenta('tetr-zen:'));
         console.log(chalk.magenta(`- Total Logs: ${progression.length}`));
 
         console.log(chalk.green(`\nCurrent Level: ${latestEntry.level.toLocaleString()}`));
@@ -125,7 +124,7 @@ async function calculateZenProgress() {
         console.log(chalk.cyan(`    Highest In One Month: ${updatedRecords.highestScoreInOneMonth.toLocaleString()}`));
 
     } catch (error) {
-        console.error('Error calculating Zen progress:', error.message);
+        console.error('Error calculating ZEN statistics:', error.message);
     }
 }
 
