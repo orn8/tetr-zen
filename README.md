@@ -39,7 +39,9 @@ tetr-zen is a node.js program to log and summarise your ZEN progression on TETR.
 1) To log your current ZEN score, run `npm run fetchZen`.
 2) To view your ZEN statistics, run `npm run zenStats`.
 
----
+<br/>
+<br/>
+<br/>
 
 <blockquote>
 
