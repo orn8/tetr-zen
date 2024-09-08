@@ -5,7 +5,7 @@ import chalk from 'chalk';  // Importing `chalk` for colored console output
 // Asynchronous function to fetch and save ZEN record data for a specific user
 async function fetchAndSaveZenRecord(username) {
     try {
-        const url = `https://ch.tetr.io/api/users/${username}/records`;  // Constructing the API URL for the user's records
+        const url = `https://ch.tetr.io/api/users/${username}/summaries/zen`;  // Constructing the API URL for the user's records
         const response = await fetch(url);  // Making an HTTP GET request to fetch the user's data
 
         if (!response.ok) {  // Checking if the response is successful (status code 200)
