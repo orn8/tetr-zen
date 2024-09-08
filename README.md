@@ -26,6 +26,11 @@ tetr-zen is a node.js program to log and summarise your ZEN progression on TETR.
 > [!IMPORTANT]
 > tetr-zen uses *your* ZEN score logs to view your stats, it does not store a history of ZEN scores for other users.
 
+## Upcoming Features
+
+- [ ] Time travel system (view your stats from a specific point in time from your logs)
+- [ ] Chart system (display progression through a chart)
+ 
 ## Installation
 
 1) [Download](https://github.com/orn8/tetr-zen/archive/refs/heads/main.zip) and extract the source code.
