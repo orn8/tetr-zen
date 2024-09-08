@@ -1,5 +1,5 @@
-import { readFile, writeFile, access } from 'fs/promises';  // Import file handling functions
-import chalk from 'chalk';  // Importing chalk for colored console output
+import { readFile, writeFile, access } from "fs/promises";  // Import file handling functions
+import chalk from "chalk";  // Importing chalk for colored console output
 
 // Function to ensure the existence of a personal records file and initialize it if it doesn't exist
 async function ensurePersonalRecords() {
@@ -10,16 +10,16 @@ async function ensurePersonalRecords() {
     };
 
     try {
-        await access('personal_records.json');  // Check if the file exists
-        const personalRecordsData = await readFile('personal_records.json', 'utf-8');  // Read the personal records data
+        await access("personal_records.json");  // Check if the file exists
+        const personalRecordsData = await readFile("personal_records.json", "utf-8");  // Read the personal records data
         const personalRecords = JSON.parse(personalRecordsData);  // Parse the JSON data
 
         const updatedRecords = { ...initialRecords, ...personalRecords };  // Merge initial records with existing data (preferring existing data)
-        await writeFile('personal_records.json', JSON.stringify(updatedRecords, null, 2));  // Write the updated records back to the file
+        await writeFile("personal_records.json", JSON.stringify(updatedRecords, null, 2));  // Write the updated records back to the file
         return updatedRecords;  // Return the records
     } catch (error) {
-        await writeFile('personal_records.json', JSON.stringify(initialRecords, null, 2));  // Initialize the file with default values if it doesn't exist
-        console.error('personal_records.json does not exist, initialising personal bests.');
+        await writeFile("personal_records.json", JSON.stringify(initialRecords, null, 2));  // Initialize the file with default values if it doesn't exist
+        console.error(chalk.red("personal_records.json does not exist, initialising personal bests."));
         return initialRecords;  // Return the initial records
     }
 }
@@ -27,11 +27,11 @@ async function ensurePersonalRecords() {
 // Function to read the zen progression data from the file
 async function readProgressionData() {
     try {
-        await access('zen_progression.json');  // Check if the progression file exists
-        const data = await readFile('zen_progression.json', 'utf-8');  // Read the data
+        await access("zen_progression.json");  // Check if the progression file exists
+        const data = await readFile("zen_progression.json", "utf-8");  // Read the data
         return JSON.parse(data);  // Parse and return the data
     } catch (error) {
-        throw new Error('zen_progression.json does not exist, please run "npm run fetchZen".');  // Throw an error if the file is missing
+        throw new Error(`zen_progression.json does not exist, please run "npm run fetchZen".`);  // Throw an error if the file is missing
     }
 }
 
@@ -48,7 +48,7 @@ function calculateTimeDifferences(progression) {
         const scoreDifference = currEntry.score - prevEntry.score;  // Calculate the score difference
 
         if (!isFinite(timeDifferenceDays) || timeDifferenceDays <= 0) {  // Handle invalid or zero/negative time differences
-            console.error('Invalid time difference. Skipping entry:');
+            console.error(chalk.red("Invalid time difference. Skipping entry:"));
             console.log(JSON.stringify(prevEntry, null, 2));
             console.log(JSON.stringify(currEntry, null, 2));
             console.log();
@@ -91,7 +91,7 @@ async function updatePersonalRecords(averageScorePerDay, scoreInLastDay, scoreIn
     personalRecords.highestScoreInOneDay = updateRecord(scoreInLastDay, personalRecords.highestScoreInOneDay);  // Update the highest score in one day
     personalRecords.highestScoreInOneMonth = updateRecord(scoreInLastMonth, personalRecords.highestScoreInOneMonth);  // Update the highest score in one month
 
-    await writeFile('personal_records.json', JSON.stringify(personalRecords, null, 2));  // Write the updated records to the file
+    await writeFile("personal_records.json", JSON.stringify(personalRecords, null, 2));  // Write the updated records to the file
     return personalRecords;  // Return the updated records
 }
 
@@ -102,7 +102,7 @@ async function calculateZenProgress() {
         const progression = await readProgressionData();  // Read the progression data
 
         if (progression.length < 2) {  // Check if there is enough data to calculate statistics
-            console.error('Not enough data to calculate statistics.');
+            console.error(chalk.red("Not enough data to calculate statistics."));
             return;
         }
 
@@ -115,24 +115,24 @@ async function calculateZenProgress() {
         const latestEntry = progression[progression.length - 1];  // Get the latest progression entry
 
         // Output the calculated statistics to the console using `chalk` for coloring
-        console.log(chalk.magenta('tetr-zen:'));
+        console.log(chalk.magenta("tetr-zen:"));
         console.log(chalk.magenta(`- Total Logs: ${progression.length}`));
 
         console.log(chalk.green(`\nCurrent Level: ${latestEntry.level.toLocaleString()}`));
         console.log(chalk.green(`Current Score: ${latestEntry.score.toLocaleString()}`));
 
-        console.log(chalk.yellowBright('\nAverage Score Earned:'));
+        console.log(chalk.yellowBright("\nAverage Score Earned:"));
         console.log(chalk.yellowBright(`- Per Day: ${Math.round(averageScorePerDay).toLocaleString()}`));
         console.log(chalk.yellow(`    Highest Per Day: ${Math.round(updatedRecords.highestAverageScorePerDay).toLocaleString()}`));
 
-        console.log(chalk.cyanBright('\nScore Earned:'));
+        console.log(chalk.cyanBright("\nScore Earned:"));
         console.log(chalk.cyanBright(`- In the Last Day: ${scoreInLastDay.toLocaleString()}`));
         console.log(chalk.cyan(`    Highest In One Day: ${updatedRecords.highestScoreInOneDay.toLocaleString()}`));
         console.log(chalk.cyanBright(`- In the Last Month: ${scoreInLastMonth.toLocaleString()}`));
         console.log(chalk.cyan(`    Highest In One Month: ${updatedRecords.highestScoreInOneMonth.toLocaleString()}`));
 
     } catch (error) {
-        console.error('Error calculating ZEN statistics:', error.message);  // Output any errors encountered
+        console.error(chalk.red("Error calculating ZEN statistics:", error.message));  // Output any errors encountered
     }
 }
 
