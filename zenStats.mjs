@@ -35,7 +35,7 @@ async function readProgressionData() {
     }
 }
 
-// Function to calculate time differences between each progression entry
+// Function to calculate time differences between each progression entry in days
 function calculateTimeDifferences(progression) {
     return progression.slice(1).map((entry, i) => {  // Skip the first entry and compare each subsequent entry to the previous one
         const prevEntry = progression[i];  // Previous entry
@@ -55,29 +55,31 @@ function calculateTimeDifferences(progression) {
             return null;  // Return null to indicate an invalid entry
         }
 
-        return { timeDifferenceDays, scoreDifference, currEntry, prevEntry };  // Return the calculated values
+        return { timeDifferenceDays, scoreDifference };  // Return the calculated values
     }).filter(entry => entry !== null);  // Filter out any invalid entries
 }
 
 // Function to calculate various score statistics based on time differences
 function calculateScores(timeDifferences) {
     let totalScoreImprovement = 0;  // Total score improvement across all entries
-    let totalTimeTaken = 0;  // Total time taken across all entries
+    let totalDays = 0;  // Total days across all entries
     let scoreInLastDay = 0;  // Score improvement in the last day
     let scoreInLastMonth = 0;  // Score improvement in the last month
 
     timeDifferences.forEach(({ timeDifferenceDays, scoreDifference }) => {  // Iterate through each time difference
-        totalScoreImprovement += scoreDifference / timeDifferenceDays;  // Calculate the average score improvement per day
-        totalTimeTaken += timeDifferenceDays;  // Add the time difference to the total
+        totalScoreImprovement += scoreDifference;  // Accumulate the total score improvement
+        totalDays += timeDifferenceDays;  // Accumulate the total number of days
+
         if (timeDifferenceDays <= 1) {  // If the time difference is 1 day or less
-            scoreInLastDay = scoreDifference;  // Set the score difference for the last day
+            scoreInLastDay += scoreDifference;  // Add the score difference for the last day
         }
         if (timeDifferenceDays <= 30) {  // If the time difference is 30 days or less
-            scoreInLastMonth = scoreDifference;  // Set the score difference for the last month
+            scoreInLastMonth += scoreDifference;  // Add the score difference for the last month
         }
     });
 
-    return { totalScoreImprovement, totalTimeTaken, scoreInLastDay, scoreInLastMonth };  // Return the calculated statistics
+    const averageScorePerDay = totalDays > 0 ? totalScoreImprovement / totalDays : 0;  // Calculate the average score improvement per day
+    return { averageScorePerDay, scoreInLastDay, scoreInLastMonth };  // Return the calculated statistics
 }
 
 // Function to update a personal record if the new record is higher
@@ -107,9 +109,8 @@ async function calculateZenProgress() {
         }
 
         const timeDifferences = calculateTimeDifferences(progression);  // Calculate time differences between entries
-        const { totalScoreImprovement, totalTimeTaken, scoreInLastDay, scoreInLastMonth } = calculateScores(timeDifferences);  // Calculate score statistics
+        const { averageScorePerDay, scoreInLastDay, scoreInLastMonth } = calculateScores(timeDifferences);  // Calculate score statistics
 
-        const averageScorePerDay = totalScoreImprovement / totalTimeTaken;  // Calculate the average score improvement per day
         const updatedRecords = await updatePersonalRecords(averageScorePerDay, scoreInLastDay, scoreInLastMonth, personalRecords);  // Update the personal records
 
         const latestEntry = progression[progression.length - 1];  // Get the latest progression entry
