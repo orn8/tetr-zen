@@ -18,7 +18,7 @@ async function fetchAndSaveZenRecord(username) {
             throw new Error(`Failed to fetch user records: ${data.error || 'Unknown error'}`);
         }
 
-        const zenRecord = data.data?;  // Extracting the ZEN record from the response data
+        const zenRecord = data.data;  // Extracting the ZEN record from the response data
 
         if (!zenRecord) {  // If ZEN record is not found, throw an error
             throw new Error(`ZEN record not found for user ${username}`);
