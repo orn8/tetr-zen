@@ -28,6 +28,7 @@ tetr-zen is a node.js program to log and summarise your ZEN progression on TETR.
 
 ## Upcoming Features
 
+- [ ] Timezone support
 - [ ] Time travel system (view your stats from a specific point in time from your logs)
 - [ ] Chart system (display progression through a chart)
  
