@@ -16,7 +16,7 @@ async function ensurePersonalRecords() {
         return JSON.parse(personalRecordsData);  // Parse and return the records if the file exists
     } catch (error) {
         // If the file doesn't exist or any error occurs, initialise it with the default records
-        console.error(chalk.red("personal_records.json does not exist, initializing personal bests."));
+        console.error(chalk.red("personal_records.json does not exist, initialising personal bests."));
         await writeFile("personal_records.json", JSON.stringify(initialRecords, null, 2));  // Create the file with initial values
         return initialRecords;
     }
