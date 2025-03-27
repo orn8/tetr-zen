@@ -28,9 +28,35 @@ async function readProgressionData() {
     try {
         // Check if the progression file exists
         await access("zen_progression.json");
+
         // Read and parse the progression data
         const data = await readFile("zen_progression.json", "utf-8");
-        return JSON.parse(data);
+        let progression = JSON.parse(data);
+
+        // Ensure at least two data points exist
+        if (progression.length < 2) {
+            return progression;
+        }
+
+        // Detect score reset (score decreasing at any point)
+        let resetIndex = -1;
+        for (let i = 1; i < progression.length; i++) {
+            if (progression[i].score < progression[i - 1].score) {
+                resetIndex = i;
+                break; // Stop at the first reset detected
+            }
+        }
+
+        // If a reset was found, trim everything before that reset point
+        if (resetIndex !== -1) {
+            console.log(chalk.red("Score reset detected, trimming old progression data."));
+            progression = progression.slice(resetIndex); // Keep only data from the reset point onward
+
+            // Save the trimmed progression data back to file
+            await writeFile("zen_progression.json", JSON.stringify(progression, null, 2));
+        }
+
+        return progression;
     } catch (error) {
         throw new Error(`zen_progression.json does not exist, please run "npm run fetchZen".`);
     }
